@@ -11,6 +11,7 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "change-this-in-production")
 SYSTEM_PROMPT = """You are Nova, a supportive AI partner. Help the user plan, learn, write, solve problems, and stay organised. Be warm, honest, practical, and concise. Ask useful questions only when necessary. Never claim to perform actions you cannot actually perform."""
 
 MAX_HISTORY = 16
+MAX_MESSAGE_LENGTH = 3000
 
 
 def get_client() -> Groq:
@@ -32,6 +33,8 @@ def chat():
 
     if not message:
         return jsonify({"error": "Please enter a message."}), 400
+    if len(message) > MAX_MESSAGE_LENGTH:
+        return jsonify({"error": f"Messages must be {MAX_MESSAGE_LENGTH} characters or fewer."}), 400
 
     history = session.get("history", [])
     history.append({"role": "user", "content": message})
@@ -47,7 +50,9 @@ def chat():
         reply = completion.choices[0].message.content or "I could not generate a reply."
     except Exception as exc:
         app.logger.exception("Groq request failed")
-        return jsonify({"error": f"AI request failed: {exc}"}), 500
+        if isinstance(exc, RuntimeError) and "GROQ_API_KEY" in str(exc):
+            return jsonify({"error": "The AI service is not configured yet."}), 503
+        return jsonify({"error": "The AI service is temporarily unavailable. Please try again."}), 502
 
     history.append({"role": "assistant", "content": reply})
     session["history"] = history[-MAX_HISTORY:]
@@ -66,4 +71,8 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", "5000")), debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "5000")),
+        debug=os.getenv("FLASK_DEBUG", "false").lower() == "true",
+    )
