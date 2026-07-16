@@ -55,7 +55,7 @@ form.addEventListener('submit', async (event) => {
 resetBtn.addEventListener('click', async () => {
   await fetch('/api/reset', { method: 'POST' });
   chat.innerHTML = '';
-  addMessage('assistant', 'New chat started. What would u like help with?');
+  addMessage('assistant', 'New chat started. What would you like help with?');
 });
 
 input.addEventListener('input', () => {
