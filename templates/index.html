@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nova AI Partner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">YOUR PERSONAL AI PARTNER</p>
+        <h1>Nova</h1>
+      </div>
+      <button id="resetBtn" class="secondary" type="button">New chat</button>
+    </header>
+
+    <section id="chat" class="chat" aria-live="polite">
+      <article class="message assistant">
+        <div class="avatar">N</div>
+        <div class="bubble">Hi, I’m Nova. I can help u plan, learn, write, solve problems, and organise your ideas. What are we working on today?</div>
+      </article>
+    </section>
+
+    <form id="chatForm" class="composer">
+      <textarea id="messageInput" rows="1" maxlength="3000" placeholder="Message Nova..." required></textarea>
+      <button id="sendBtn" type="submit">Send</button>
+    </form>
+    <p class="notice">Keep your Groq API key private. AI can make mistakes, so verify important information.</p>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
